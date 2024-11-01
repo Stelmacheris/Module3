@@ -2,3 +2,6 @@ pandas
 requests
 python-dotenv
 aiohttp
+numpy
+sqlalchemy
+psycopg2

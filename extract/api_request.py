@@ -1,15 +1,13 @@
 import requests
 import dotenv
 import os
-from concurrent.futures import ThreadPoolExecutor
-import asyncio
 from typing import Dict
 import aiohttp
 
 
 class ApiRequest:
     """
-    A class to handle synchronous and asynchronous requests to the Gold API.
+    A class to handle synchronous and asynchronous requests to the API.
 
     Attributes:
         url (str): The URL to query from the API.
@@ -23,21 +21,22 @@ class ApiRequest:
         self.params = params
 
     def make_request(self):
-        """Makes a synchronous HTTP GET request to the API."""
+        """Makes a synchronous HTTP GET request to the API and returns JSON data."""
         try:
             response = requests.get(self.url, headers=self.header, params=self.params)
             response.raise_for_status()
-            return response.text
+            return response.json()  # Parses response as JSON
         except requests.exceptions.RequestException as e:
             print("Error:", str(e))
             return None
 
     async def async_make_request(self):
-        """Makes an asynchronous HTTP GET request to the API."""
+        """Makes an asynchronous HTTP GET request to the API and returns JSON data."""
         async with aiohttp.ClientSession() as session:
             try:
                 async with session.get(self.url, headers=self.header, params=self.params) as response:
                     response.raise_for_status()
-                    return await response.json()
+                    return await response.json()  # Parses response as JSON
             except aiohttp.ClientError as e:
+                print("Error:", str(e))
                 return None
