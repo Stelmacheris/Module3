@@ -32,21 +32,6 @@ class PostgresConnection:
         """
         self.engine = create_engine(self.url, poolclass=StaticPool)
         return self.engine
-    
-
-    def check_connection(self) -> bool:
-        """
-        Checks if the connection to the PostgreSQL database is successful.
-
-        Returns:
-            bool: True if the connection is successful, False otherwise.
-        """
-        try:
-            with self.get_engine().connect() as connection:
-                connection.execute("SELECT 1")  # A simple test query
-            return True
-        except OperationalError:
-            return False
 
 class DatabaseHandler:
     """

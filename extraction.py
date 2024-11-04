@@ -1,15 +1,11 @@
-import dotenv
 from extract.api_request import ApiRequest
 from datetime import datetime, timedelta
-import pandas as pd
 import os
 import random
 
-dotenv.load_dotenv(dotenv.find_dotenv('.env'))
-
 API_KEY_FINDWORK = os.getenv("FINDWORK_API_KEY")
 
-def fetch_remotive_jobs():
+def fetch_remotive_jobs(**kwargs):
     """Fetches and transforms jobs from the Remotive API."""
     remotive_request = ApiRequest(
         url='https://remotive.com/api/remote-jobs',
@@ -21,7 +17,7 @@ def fetch_remotive_jobs():
         return transform_remotive_jobs(jobs)
     return []
 
-def fetch_remoteok_jobs():
+def fetch_remoteok_jobs(**kwargs):
     """Fetches and transforms jobs from the RemoteOK API."""
     remoteok_request = ApiRequest(
         url='https://remoteok.com/api',
@@ -33,7 +29,7 @@ def fetch_remoteok_jobs():
         return transform_remoteok_jobs(jobs)
     return []
 
-def fetch_findwork_jobs():
+def fetch_findwork_jobs(**kwargs):
     """Fetches and transforms jobs from the Findwork API."""
     if not API_KEY_FINDWORK:
         raise ValueError("FINDWORK_API_KEY is missing. Check your .env file.")

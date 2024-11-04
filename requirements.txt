@@ -4,4 +4,9 @@ python-dotenv
 aiohttp
 numpy
 sqlalchemy
-psycopg2
+psycopg2-binary
+apache-airflow
+pyarrow
+kubernetes
+asgiref
+markdown-it-py

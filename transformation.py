@@ -1,8 +1,6 @@
-from extraction import fetch_remotive_jobs,fetch_remoteok_jobs,fetch_findwork_jobs
 from transform.transform_handler import TransformHandler
 from datetime import datetime, timedelta
 import pandas as pd
-import re
 
 def filter_jobs_by_date(jobs, target_date):
     """Filters jobs by a specific date."""
@@ -17,10 +15,11 @@ def filter_jobs_by_date(jobs, target_date):
             continue
     return filtered_jobs
 
-def create_df():
-    remotive_jobs = fetch_remotive_jobs()
-    remoteok_jobs = fetch_remoteok_jobs()
-    findwork_jobs = fetch_findwork_jobs()
+def create_df(**kwargs):
+    ti = kwargs['ti']
+    remotive_jobs = ti.xcom_pull(task_ids='fetch_remotive_jobs')
+    remoteok_jobs = ti.xcom_pull(task_ids='fetch_remoteok_jobs')
+    findwork_jobs = ti.xcom_pull(task_ids='fetch_findwork_jobs')
 
     all_jobs = remotive_jobs + remoteok_jobs + findwork_jobs
 
@@ -31,24 +30,24 @@ def create_df():
     
     return jobs_df
 
-def clean_df():
-    jobs_df = create_df()
+def clean_df(**kwargs):
+    ti = kwargs['ti']
+    jobs_df = ti.xcom_pull(task_ids='concatenate_data')
     transfrom_handler:TransformHandler = TransformHandler(jobs_df)
     transfrom_handler.extract_date_apply('date')
     transfrom_handler.convert_to_euro_apply('salary_range')
     cleaned_df = transfrom_handler.get_df()
     return cleaned_df
 
-def create_statistic():
-    jobs_df = clean_df()
+def create_statistic(**kwargs):
+    ti = kwargs['ti']
+    jobs_df = ti.xcom_pull(task_ids='cleaned_df')
     data_engineering_df = jobs_df[jobs_df['title'].str.contains('data engineering', case=True, na=False)]
     remote_count = data_engineering_df['location'].str.contains(r'\bremote\b', case=True, na=False).sum()
     data_engineering_df = data_engineering_df.dropna(subset=['salary_range'])
 
-    # Extract min and max salary from 'salary_range' column
     data_engineering_df[['min_salary', 'max_salary']] = data_engineering_df['salary_range'].str.extract(r'(\d+\.?\d*)€ - (\d+\.?\d*)€').astype(float)
 
-    # Calculate min, max, average, and std for the salary range
     min_salary = float(data_engineering_df['min_salary'].min())
     max_salary = float(data_engineering_df['max_salary'].max())
     avg_salary = float(data_engineering_df[['min_salary', 'max_salary']].stack().mean())
@@ -67,7 +66,4 @@ def create_statistic():
     'standard_deviation': round(std_salary, 2)
     }
     statsitics_df = pd.DataFrame([statsitics])
-    return statsitics_df
-
-if __name__ == '__main__':
-    clean_df()
+    return jobs_df,statsitics_df

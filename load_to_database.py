@@ -1,9 +1,5 @@
 from load.database import PostgresConnection,DatabaseHandler
 import os
-import dotenv
-from transformation import create_statistic,clean_df
-
-dotenv.load_dotenv(dotenv.find_dotenv('.env'))
 
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
@@ -11,15 +7,12 @@ DB_DATABASE = os.getenv("DB_DATABASE")
 DB_HOST = os.getenv("DB_HOST")
 DB_PORT = os.getenv("DB_PORT")
 
-
-if __name__ == '__main__':
+def insert_to_database(**kwargs):
     pc = PostgresConnection(DB_USER,DB_PASSWORD,DB_HOST,DB_DATABASE,DB_PORT)
     engine = pc.get_engine()
 
-    job_listings_df = clean_df()
-    statistics_df = create_statistic()
-
-    print(statistics_df)
+    ti = kwargs['ti']
+    job_listings_df,statistics_df = ti.xcom_pull(task_ids='create_statistic')
 
     db_handler_jobs = DatabaseHandler(job_listings_df,'job_listings',engine)
     db_handler_jobs.load_to_database()

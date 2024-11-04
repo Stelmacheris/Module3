@@ -1,3 +1,7 @@
 \job-listing
 .env
 \__pycache__
+\logs
+\airflow
+\config
+\plugins
