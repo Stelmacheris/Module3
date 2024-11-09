@@ -1,8 +1,6 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-import sys
-import os
 from extraction import fetch_findwork_jobs, fetch_remoteok_jobs, fetch_remotive_jobs
 from transformation import create_df, clean_df, create_statistic
 from load_to_database import insert_to_database

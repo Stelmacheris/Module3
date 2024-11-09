@@ -1,6 +1,6 @@
-pandas
-requests
+pandas==2.2.3
+requests==2.32.3
 python-dotenv
-aiohttp
-numpy
-psycopg2-binary
+aiohttp==3.10.10
+numpy==2.1
+psycopg2-binary==2.9.10
