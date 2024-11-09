@@ -3,10 +3,4 @@ requests
 python-dotenv
 aiohttp
 numpy
-sqlalchemy
 psycopg2-binary
-apache-airflow
-pyarrow
-kubernetes
-asgiref
-markdown-it-py
